@@ -4,6 +4,7 @@ import { Carro } from '../../Modelos/Carro';
 import { HttpErrorResponse} from '@angular/common/http';
 import { AppDiniServiceProvider } from '../../providers/app-dini-service/app-dini-service';
 import { NavLifecycles } from '../../Utils/ionic/nav/nav-lifecycles';
+import { EscolhaPage } from '../escolha/escolha';
 
 @Component({
   selector: 'page-home',
@@ -44,6 +45,12 @@ export class HomePage implements NavLifecycles {
           }).present();
         }
       )
+  }
+
+  selecionaCarro(carro: Carro){
+    this.navCtrl.push(EscolhaPage.name,{
+      'carroSelecionado': carro
+    });
   }
 
 }
