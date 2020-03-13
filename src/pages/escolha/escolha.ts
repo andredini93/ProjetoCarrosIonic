@@ -1,13 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Carro } from '../../Modelos/Carro';
-
-/**
- * Generated class for the EscolhaPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { CadastroPage } from '../cadastro/cadastro';
 
 @IonicPage()
 @Component({
@@ -34,6 +28,13 @@ export class EscolhaPage {
     ativado ?
       this._precoTotal += precoAcessorio :
       this._precoTotal -= precoAcessorio;
+  }
+
+  avancaCadastro(){
+    this.navCtrl.push(CadastroPage.name,{
+      carroSelecionado: this.carro,
+      precoTotal: this._precoTotal
+    });
   }
 
   get precoTotal() {
