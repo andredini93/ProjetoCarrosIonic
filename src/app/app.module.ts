@@ -10,6 +10,9 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpClientModule } from '@angular/common/http';
 import { AppDiniServiceProvider } from '../providers/app-dini-service/app-dini-service';
+import { AgendamentosServiceProvider } from '../providers/agendamentos-service/agendamentos-service';
+
+import 'rxjs/add/operator/finally';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,8 @@ import { AppDiniServiceProvider } from '../providers/app-dini-service/app-dini-s
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    AppDiniServiceProvider
+    AppDiniServiceProvider,
+    AgendamentosServiceProvider
   ]
 })
 export class AppModule {}
