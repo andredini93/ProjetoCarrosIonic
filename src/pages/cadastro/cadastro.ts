@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, AlertController, Alert } from 'ion
 import { Carro } from '../../Modelos/Carro';
 import { AgendamentosServiceProvider } from '../../providers/agendamentos-service/agendamentos-service';
 import { HomePage } from '../home/home';
+import { Agendamento } from '../../Modelos/Agendamento';
+import { AgendamentoDaoProvider } from '../../providers/agendamento-dao/agendamento-dao';
 
 @IonicPage()
 @Component({
@@ -23,19 +25,23 @@ export class CadastroPage {
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
     private _agendamentosService: AgendamentosServiceProvider,
-    private _alertCtrl: AlertController) {
+    private _alertCtrl: AlertController,
+    private _agendamentoDAO: AgendamentoDaoProvider) {
       
       this. carro = this.navParams.get('carroSelecionado');
       this. precoTotal = this.navParams.get('precoTotal');
   }
 
   agenda(){
-    let agendamento = {
+    let agendamento: Agendamento = {
       nomeCliente: this.nome,
       enderecoCliente: this.endereco,
       emailCliente: this.email,
       modeloCarro: this.carro.nome,
-      precoTotal: this.precoTotal
+      precoTotal: this.precoTotal,
+      data: this.data,
+      confirmado: false,
+      enviado: false
     }
 
     this._alerta = this._alertCtrl.create({
@@ -52,7 +58,21 @@ export class CadastroPage {
 
     let mensagem = '';
 
-    this._agendamentosService.agenda(agendamento)
+    this._agendamentoDAO.ehDuplicado(agendamento)
+      .mergeMap(ehDuplicado => {
+        if(ehDuplicado){
+          throw new Error('Agendamento existente');
+        }
+
+        return this._agendamentosService.agenda(agendamento)
+      })   
+      .mergeMap((valor) => {
+        let Observable = this._agendamentoDAO.salva(agendamento);
+        if(valor instanceof Error){
+          throw valor;
+        }
+        return Observable;
+      })
       .finally(
         () => {
           this._alerta.setSubTitle(mensagem);
@@ -60,13 +80,11 @@ export class CadastroPage {
         }
       )
       .subscribe(
-        () => {
-          mensagem = 'Agendamento realizado!';
-        },
-        () => {
-          mensagem = 'Falha no agendamento. Tente novamente.';
-        }
+        () => mensagem = 'Agendamento realizado!',
+        (erro: Error) => mensagem = erro.message
       ) 
   }
+
+  
 
 }
